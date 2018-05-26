@@ -10,8 +10,8 @@ import android.widget.Toast;
 
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.common.mvp.view.BaseFragment;
+import org.fossasia.openevent.app.core.auth.AuthActivity;
 import org.fossasia.openevent.app.core.auth.forgot.submit.ResetPasswordByTokenFragment;
-import org.fossasia.openevent.app.core.auth.login.LoginFragment;
 import org.fossasia.openevent.app.databinding.ForgotPasswordFragmentBinding;
 import org.fossasia.openevent.app.ui.ViewUtils;
 
@@ -42,6 +42,11 @@ public class ForgotPasswordFragment extends BaseFragment<ForgotPasswordPresenter
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.forgot_password_fragment, container, false);
         validator = new Validator(binding);
+
+        getPresenter().getEmailId().setEmail(
+            ((AuthActivity) getActivity()).getEmail()
+        );
+
         return binding.getRoot();
     }
 
@@ -71,16 +76,14 @@ public class ForgotPasswordFragment extends BaseFragment<ForgotPasswordPresenter
     }
 
     private void openLoginPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            .replace(R.id.fragment_container, new LoginFragment())
-            .commit();
+        getFragmentManager().popBackStack();
     }
 
     private void openSubmitTokenPage() {
         getFragmentManager().beginTransaction()
-        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right)
-            .replace(R.id.fragment_container, new ResetPasswordByTokenFragment())
+        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right, R.anim.enter_from_right, R.anim.exit_from_left)
+            .add(R.id.fragment_container, new ResetPasswordByTokenFragment())
+            .addToBackStack(null)
             .commit();
     }
 
@@ -102,6 +105,7 @@ public class ForgotPasswordFragment extends BaseFragment<ForgotPasswordPresenter
 
     @Override
     public void onSuccess(String message) {
+        ((AuthActivity) getActivity()).setEmail(binding.getForgotEmail().getEmail());
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         openSubmitTokenPage();
     }

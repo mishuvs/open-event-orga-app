@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.common.mvp.view.BaseFragment;
+import org.fossasia.openevent.app.core.auth.AuthActivity;
 import org.fossasia.openevent.app.core.auth.forgot.request.ForgotPasswordFragment;
 import org.fossasia.openevent.app.core.auth.signup.SignUpFragment;
 import org.fossasia.openevent.app.core.main.MainActivity;
@@ -35,6 +37,8 @@ public class LoginFragment extends BaseFragment implements LoginView {
     private LoginViewModel loginFragmentViewModel;
     private LoginFragmentBinding binding;
     private Validator validator;
+
+    private FragmentManager fm;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -71,6 +75,17 @@ public class LoginFragment extends BaseFragment implements LoginView {
         });
         binding.signUpLink.setOnClickListener(view -> openSignUpPage());
         binding.forgotPasswordLink.setOnClickListener(view -> openForgotPasswordPage());
+
+        fm = getFragmentManager();
+
+        fm.addOnBackStackChangedListener(() -> {
+            if (fm.getBackStackEntryCount() == 0) {
+                binding.emailDropdown.setText(
+                    ((AuthActivity) getActivity()).getEmail()
+                );
+                setTitle(getString(getTitle()));
+            }
+        });
     }
 
     private void handleIntent(Boolean isLoggedIn) {
@@ -92,16 +107,20 @@ public class LoginFragment extends BaseFragment implements LoginView {
     }
 
     private void openSignUpPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right)
-            .replace(R.id.fragment_container, new SignUpFragment())
+        ((AuthActivity) getActivity()).setEmail(binding.getLogin().getEmail());
+        fm.beginTransaction()
+            .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right, R.anim.enter_from_right, R.anim.exit_from_left)
+            .add(R.id.fragment_container, SignUpFragment.newInstance())
+            .addToBackStack(null)
             .commit();
     }
 
     private void openForgotPasswordPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right)
-            .replace(R.id.fragment_container, new ForgotPasswordFragment())
+        ((AuthActivity) getActivity()).setEmail(binding.getLogin().getEmail());
+        fm.beginTransaction()
+            .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right, R.anim.enter_from_right, R.anim.exit_from_left)
+            .add(R.id.fragment_container, ForgotPasswordFragment.newInstance())
+            .addToBackStack(null)
             .commit();
     }
 

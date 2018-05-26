@@ -2,6 +2,7 @@ package org.fossasia.openevent.app.core.auth.forgot.submit;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,6 @@ import android.widget.Toast;
 
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.common.mvp.view.BaseFragment;
-import org.fossasia.openevent.app.core.auth.forgot.request.ForgotPasswordFragment;
-import org.fossasia.openevent.app.core.auth.login.LoginFragment;
 import org.fossasia.openevent.app.databinding.ResetPasswordByTokenFragmentBinding;
 import org.fossasia.openevent.app.ui.ViewUtils;
 
@@ -75,17 +74,11 @@ public class ResetPasswordByTokenFragment extends BaseFragment<ResetPasswordByTo
     }
 
     private void openLoginPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            .replace(R.id.fragment_container, new LoginFragment())
-            .commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     private void openForgotPasswordPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            .replace(R.id.fragment_container, new ForgotPasswordFragment())
-            .commit();
+        getFragmentManager().popBackStack();
     }
 
     @Override

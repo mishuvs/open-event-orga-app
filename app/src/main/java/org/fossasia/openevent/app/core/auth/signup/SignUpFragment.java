@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.common.mvp.view.BaseFragment;
-import org.fossasia.openevent.app.core.auth.login.LoginFragment;
+import org.fossasia.openevent.app.core.auth.AuthActivity;
 import org.fossasia.openevent.app.data.ContextUtils;
 import org.fossasia.openevent.app.databinding.SignUpFragmentBinding;
 import org.fossasia.openevent.app.ui.ViewUtils;
@@ -42,6 +42,11 @@ public class SignUpFragment extends BaseFragment<SignUpPresenter> implements Sig
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_up_fragment, container, false);
         validator = new Validator(binding);
+
+        getPresenter().getUser().setEmail(
+            ((AuthActivity) getActivity()).getEmail()
+        );
+
         return binding.getRoot();
     }
 
@@ -69,10 +74,7 @@ public class SignUpFragment extends BaseFragment<SignUpPresenter> implements Sig
     }
 
     private void openLoginPage() {
-        getFragmentManager().beginTransaction()
-            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            .replace(R.id.fragment_container, new LoginFragment())
-            .commit();
+        getFragmentManager().popBackStack();
     }
 
     @Override
