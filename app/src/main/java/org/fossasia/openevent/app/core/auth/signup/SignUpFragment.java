@@ -42,6 +42,11 @@ public class SignUpFragment extends BaseFragment<SignUpPresenter> implements Sig
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_up_fragment, container, false);
         validator = new Validator(binding);
+
+        getPresenter().getUser().setEmail(
+            ((LoginFragment.EmailIdTransfer) getContext()).getEmail()
+        );
+
         return binding.getRoot();
     }
 

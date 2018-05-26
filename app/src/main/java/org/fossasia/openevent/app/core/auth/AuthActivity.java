@@ -18,7 +18,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
-public class AuthActivity extends AppCompatActivity implements HasSupportFragmentInjector {
+public class AuthActivity extends AppCompatActivity implements HasSupportFragmentInjector, LoginFragment.EmailIdTransfer {
 
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
@@ -27,6 +27,8 @@ public class AuthActivity extends AppCompatActivity implements HasSupportFragmen
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
     @Inject
     BackPressHandler backPressHandler;
+
+    private String email;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,4 +56,15 @@ public class AuthActivity extends AppCompatActivity implements HasSupportFragmen
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return dispatchingAndroidInjector;
     }
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 }

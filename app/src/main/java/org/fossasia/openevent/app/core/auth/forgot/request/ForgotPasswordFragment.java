@@ -42,6 +42,11 @@ public class ForgotPasswordFragment extends BaseFragment<ForgotPasswordPresenter
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.forgot_password_fragment, container, false);
         validator = new Validator(binding);
+
+        getPresenter().getEmailId().setEmail(
+            ((LoginFragment.EmailIdTransfer) getContext()).getEmail()
+        );
+
         return binding.getRoot();
     }
 
@@ -102,6 +107,7 @@ public class ForgotPasswordFragment extends BaseFragment<ForgotPasswordPresenter
 
     @Override
     public void onSuccess(String message) {
+        ((LoginFragment.EmailIdTransfer) getContext()).setEmail(binding.getForgotEmail().getEmail());
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         openSubmitTokenPage();
     }

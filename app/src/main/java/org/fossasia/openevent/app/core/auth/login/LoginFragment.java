@@ -73,6 +73,14 @@ public class LoginFragment extends BaseFragment implements LoginView {
         binding.forgotPasswordLink.setOnClickListener(view -> openForgotPasswordPage());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.getLogin().setEmail(
+            ((EmailIdTransfer) getContext()).getEmail()
+        );
+    }
+
     private void handleIntent(Boolean isLoggedIn) {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -92,6 +100,7 @@ public class LoginFragment extends BaseFragment implements LoginView {
     }
 
     private void openSignUpPage() {
+        ((EmailIdTransfer) getContext()).setEmail(binding.getLogin().getEmail());
         getFragmentManager().beginTransaction()
             .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right)
             .replace(R.id.fragment_container, new SignUpFragment())
@@ -99,6 +108,7 @@ public class LoginFragment extends BaseFragment implements LoginView {
     }
 
     private void openForgotPasswordPage() {
+        ((EmailIdTransfer) getContext()).setEmail(binding.getLogin().getEmail());
         getFragmentManager().beginTransaction()
             .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right)
             .replace(R.id.fragment_container, new ForgotPasswordFragment())
@@ -127,5 +137,10 @@ public class LoginFragment extends BaseFragment implements LoginView {
         binding.emailDropdown.setAdapter(
             new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>(emails))
         );
+    }
+
+    public interface EmailIdTransfer {
+        void setEmail(String email);
+        String getEmail();
     }
 }
