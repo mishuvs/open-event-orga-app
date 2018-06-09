@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.core.attendee.list.AttendeesFragment;
 import org.fossasia.openevent.app.core.event.dashboard.EventDashboardFragment;
-import org.fossasia.openevent.app.core.event.list.EventListFragment;
+import org.fossasia.openevent.app.core.event.list.EventListContainer;
 import org.fossasia.openevent.app.core.faq.list.FaqListFragment;
 import org.fossasia.openevent.app.core.feedback.list.FeedbackListFragment;
 import org.fossasia.openevent.app.core.settings.SettingsFragment;
@@ -66,7 +66,7 @@ class FragmentNavigator {
                 fragment = TicketsFragment.newInstance(eventId);
                 break;
             case R.id.nav_events:
-                fragment = EventListFragment.newInstance();
+                fragment = EventListContainer.newInstance();
                 break;
             case R.id.nav_settings:
                 fragment = SettingsFragment.newInstance();

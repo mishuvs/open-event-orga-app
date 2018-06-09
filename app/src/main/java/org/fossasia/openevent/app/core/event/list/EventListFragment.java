@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,17 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import org.fossasia.openevent.app.R;
-import org.fossasia.openevent.app.common.mvp.view.BaseFragment;
+import org.fossasia.openevent.app.common.mvp.view.BaseChildFragment;
 import org.fossasia.openevent.app.core.event.create.CreateEventActivity;
 import org.fossasia.openevent.app.data.Bus;
 import org.fossasia.openevent.app.data.ContextUtils;
 import org.fossasia.openevent.app.data.event.Event;
 import org.fossasia.openevent.app.databinding.FragmentEventListBinding;
-import org.fossasia.openevent.app.ui.ViewUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,7 +43,7 @@ import static org.fossasia.openevent.app.core.event.list.EventsPresenter.SORTBYN
  * create an instance of this fragment.
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class EventListFragment extends BaseFragment<EventsPresenter> implements EventsView {
+public class EventListFragment extends BaseChildFragment<EventsPresenter> implements EventsView {
     @Inject
     ContextUtils utilModel;
 
@@ -57,10 +55,10 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
 
     private FragmentEventListBinding binding;
     private RecyclerView recyclerView;
-    private SwipeRefreshLayout refreshLayout;
 
     private EventsListAdapter eventListAdapter;
-    private RecyclerView.AdapterDataObserver adapterDataObserver;
+
+    private List<Event> events = new ArrayList<>();
 
     private Context context;
     private boolean initialized;
@@ -92,23 +90,6 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_list, container, false);
-
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(
-            item -> {
-                switch (item.getItemId()) {
-                    case R.id.action_live:
-                        eventListAdapter.getFilter().filter("live");
-                        return true;
-                    case R.id.action_upcoming:
-                        eventListAdapter.getFilter().filter("upcoming");
-                        return true;
-                    case R.id.action_past:
-                        eventListAdapter.getFilter().filter("past");
-                        return true;
-                    default:
-                        return false;
-                }
-            });
 
         return binding.getRoot();
     }
@@ -149,7 +130,7 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     private void sortEvents(int sortBy) {
         getPresenter().sortBy(sortBy);
         eventListAdapter.setSortByName(sortBy == SORTBYNAME);
-        binding.setVariable(BR.events, getPresenter().getEvents());
+        binding.setVariable(BR.events, events);
         binding.executePendingBindings();
         eventListAdapter.notifyDataSetChanged();
     }
@@ -163,9 +144,8 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     public void onStart() {
         super.onStart();
         setupRecyclerView();
-        setupRefreshListener();
         getPresenter().attach(this);
-        binding.setEvents(getPresenter().getEvents());
+        binding.setEvents(events);
         getPresenter().start();
 
         initialized = true;
@@ -178,21 +158,9 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
         startActivity(intent);
     }
 
-    @Override
-    protected int getTitle() {
-        return R.string.events;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        refreshLayout.setOnRefreshListener(null);
-        eventListAdapter.unregisterAdapterDataObserver(adapterDataObserver);
-    }
-
     private void setupRecyclerView() {
         if (!initialized) {
-            eventListAdapter = new EventsListAdapter(getPresenter().getEvents(), bus, getPresenter());
+            eventListAdapter = new EventsListAdapter(events, bus, getPresenter());
             binding.bottomNavigation.setSelectedItemId(R.id.action_live);
 
             recyclerView = binding.eventRecyclerView;
@@ -200,56 +168,7 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
             recyclerView.setAdapter(eventListAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
             recyclerView.setItemAnimator(new DefaultItemAnimator());
-            StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(eventListAdapter);
-            recyclerView.addItemDecoration(decoration);
-
-            adapterDataObserver = new RecyclerView.AdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    decoration.invalidateHeaders();
-                }
-            };
         }
-        eventListAdapter.registerAdapterDataObserver(adapterDataObserver);
-    }
-
-    private void setupRefreshListener() {
-        refreshLayout = binding.swipeContainer;
-        refreshLayout.setColorSchemeColors(utilModel.getResourceColor(R.color.color_accent));
-        refreshLayout.setOnRefreshListener(() -> {
-            refreshLayout.setRefreshing(false);
-            getPresenter().loadUserEvents(true);
-        });
-    }
-
-    @Override
-    public void showProgress(boolean show) {
-        ViewUtils.showView(binding.progressBar, show);
-    }
-
-    @Override
-    public void onRefreshComplete(boolean success) {
-        if (success) {
-            ViewUtils.showSnackbar(recyclerView, R.string.refresh_complete);
-            getPresenter().resetToDefaultState();
-        }
-    }
-
-    @Override
-    public void showResults(List<Event> events) {
-        binding.setVariable(BR.events, events);
-        binding.executePendingBindings();
-        eventListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void showEmptyView(boolean show) {
-        ViewUtils.showView(binding.emptyView, show);
-    }
-
-    @Override
-    public void showError(String error) {
-        ViewUtils.showSnackbar(binding.getRoot(), error);
     }
 
     @Override
@@ -266,8 +185,11 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     }
 
     @Override
-    public void resetEventsList() {
-        eventListAdapter.categorizeEvents();
-        binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+    public void setEventsList(List<Event> events) {
+        this.events = events;
+        getPresenter().setEvents(events);
+        binding.setVariable(BR.events, events);
+        binding.executePendingBindings();
+        eventListAdapter.notifyDataSetChanged();
     }
 }

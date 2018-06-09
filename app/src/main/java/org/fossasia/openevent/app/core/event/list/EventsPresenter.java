@@ -4,12 +4,9 @@ import android.databinding.ObservableBoolean;
 import android.support.annotation.VisibleForTesting;
 
 import org.fossasia.openevent.app.common.mvp.presenter.AbstractBasePresenter;
-import org.fossasia.openevent.app.common.rx.Logger;
 import org.fossasia.openevent.app.data.event.Event;
-import org.fossasia.openevent.app.data.event.EventRepository;
 import org.fossasia.openevent.app.utils.service.DateService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,17 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-
-import static org.fossasia.openevent.app.common.rx.ViewTransformers.dispose;
-import static org.fossasia.openevent.app.common.rx.ViewTransformers.emptiable;
-import static org.fossasia.openevent.app.common.rx.ViewTransformers.progressiveErroneousRefresh;
-
 public class EventsPresenter extends AbstractBasePresenter<EventsView> {
 
-    private final List<Event> events = new ArrayList<>();
     private boolean editMode;
-    private final EventRepository eventsDataRepository;
+    private List<Event> events;
     private Event lastEvent = new Event();
 
     public final Map<Event, ObservableBoolean> selectedMap = new ConcurrentHashMap<>();
@@ -35,18 +25,7 @@ public class EventsPresenter extends AbstractBasePresenter<EventsView> {
     public static final int SORTBYNAME = 1;
 
     @Inject
-    public EventsPresenter(EventRepository eventsDataRepository) {
-        this.eventsDataRepository = eventsDataRepository;
-    }
-
-    @Override
-    public void start() {
-        loadUserEvents(false);
-    }
-
-    public List<Event> getEvents() {
-        return events;
-    }
+    public EventsPresenter() { }
 
     public void sortBy(int criteria) {
         if (criteria == SORTBYNAME)
@@ -56,31 +35,13 @@ public class EventsPresenter extends AbstractBasePresenter<EventsView> {
         }
     }
 
-    public void loadUserEvents(boolean forceReload) {
-        if (getView() == null)
-            return;
-
-        getEventSource(forceReload)
-            .compose(dispose(getDisposable()))
-            .compose(progressiveErroneousRefresh(getView(), forceReload))
-            .toSortedList()
-            .compose(emptiable(getView(), events))
-            .subscribe(something -> {
-                Logger.logSuccess(something);
-                getView().resetEventsList();
-            }, Logger::logError);
-    }
-
-    private Observable<Event> getEventSource(boolean forceReload) {
-        if (!forceReload && !events.isEmpty() && isRotated())
-            return Observable.fromIterable(events);
-        else
-            return eventsDataRepository.getEvents(forceReload);
-    }
-
     @VisibleForTesting
     public EventsView getView() {
         return super.getView();
+    }
+
+    @Override
+    public void start() {
     }
 
     public void unselectEvent(Event event) {
@@ -123,5 +84,9 @@ public class EventsPresenter extends AbstractBasePresenter<EventsView> {
         super.detach();
         selectedMap.clear();
         resetToDefaultState();
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 }

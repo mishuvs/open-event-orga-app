@@ -3,32 +3,18 @@ package org.fossasia.openevent.app.core.event.list;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import org.fossasia.openevent.app.common.ContextManager;
 import org.fossasia.openevent.app.common.Pipe;
 import org.fossasia.openevent.app.data.Bus;
 import org.fossasia.openevent.app.data.event.Event;
 import org.fossasia.openevent.app.databinding.EventLayoutBinding;
-import org.fossasia.openevent.app.databinding.HeaderLayoutBinding;
-import org.fossasia.openevent.app.ui.HeaderViewHolder;
-import org.fossasia.openevent.app.utils.service.DateService;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import timber.log.Timber;
-
-class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.EventRecyclerViewHolder>
-    implements StickyRecyclerHeadersAdapter<HeaderViewHolder>, Filterable {
+class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.EventRecyclerViewHolder> {
 
     private final List<Event> events;
-    private final List<Event> selectedEvents = new ArrayList<>();
 
     private final Bus bus;
     private final EventsPresenter eventsPresenter;
@@ -40,37 +26,7 @@ class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.EventRecy
         this.eventsPresenter = eventsPresenter;
     }
 
-    public void categorizeEvents() {
-
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                selectedEvents.clear();
-                for (Event event : events) {
-                    try {
-                        String category = DateService.getEventStatus(event);
-                        if (constraint.toString().equalsIgnoreCase(category))
-                            selectedEvents.add(event);
-                    } catch (ParseException e) {
-                        Timber.e(e);
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                notifyDataSetChanged();
-            }
-        };
-    }
-
-    @Override
+        @Override
     public EventRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
@@ -84,37 +40,13 @@ class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.EventRecy
 
     @Override
     public void onBindViewHolder(final EventRecyclerViewHolder holder, int position) {
-        final Event thisEvent = selectedEvents.get(position);
+        final Event thisEvent = events.get(position);
         holder.bind(thisEvent);
     }
 
     @Override
-    public long getHeaderId(int position) {
-        if (sortByName) {
-            return selectedEvents.get(position).getName().substring(0, 1).toUpperCase(Locale.getDefault()).hashCode();
-        } else {
-            return selectedEvents.get(position).getHeaderId();
-        }
-    }
-
-    @Override
-    public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup viewGroup) {
-        return new HeaderViewHolder(HeaderLayoutBinding.inflate(
-            LayoutInflater.from(viewGroup.getContext()), viewGroup, false));
-    }
-
-    @Override
-    public void onBindHeaderViewHolder(HeaderViewHolder headerViewHolder, int i) {
-        if (sortByName) {
-            headerViewHolder.bindHeader(selectedEvents.get(i).getName().substring(0, 1).toUpperCase(Locale.getDefault()));
-        } else {
-            headerViewHolder.bindHeader(selectedEvents.get(i).getHeader());
-       }
-    }
-
-    @Override
     public int getItemCount() {
-        return selectedEvents.size();
+        return events.size();
     }
 
     public void setSortByName(boolean sortBy) {
