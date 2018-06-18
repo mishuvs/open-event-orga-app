@@ -57,7 +57,9 @@ class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.EventRecy
                 for (Event event : events) {
                     try {
                         String category = DateService.getEventStatus(event);
-                        if (constraint.toString().equalsIgnoreCase(category))
+                        if(constraint.toString().equalsIgnoreCase("draft") && event.getState().equalsIgnoreCase("draft"))
+                            selectedEvents.add(event);
+                        else if (constraint.toString().equalsIgnoreCase(category) && !event.getState().equalsIgnoreCase("draft"))
                             selectedEvents.add(event);
                     } catch (ParseException e) {
                         Timber.e(e);

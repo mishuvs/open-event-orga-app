@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -92,22 +93,50 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_event_list, container, false);
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(
-            item -> {
-                switch (item.getItemId()) {
-                    case R.id.action_live:
+//        binding.bottomNavigation.setOnNavigationItemSelectedListener(
+//            item -> {
+//                switch (item.getItemId()) {
+//                    case R.id.action_live:
+//                        eventListAdapter.getFilter().filter("live");
+//                        return true;
+//                    case R.id.action_past:
+//                        eventListAdapter.getFilter().filter("past");
+//                        return true;
+//                    case R.id.action_draft:
+//                        eventListAdapter.getFilter().filter("draft");
+//                        return true;
+//                    default:
+//                        return false;
+//                }
+//            });
+
+        binding.tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
                         eventListAdapter.getFilter().filter("live");
-                        return true;
-                    case R.id.action_upcoming:
-                        eventListAdapter.getFilter().filter("upcoming");
-                        return true;
-                    case R.id.action_past:
+                        break;
+                    case 1:
                         eventListAdapter.getFilter().filter("past");
-                        return true;
-                    default:
-                        return false;
+                        break;
+                    case 2:
+                        eventListAdapter.getFilter().filter("draft");
+                        break;
                 }
-            });
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //do nothing
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //do nothing
+            }
+        });
+
 
         return binding.getRoot();
     }
@@ -178,7 +207,8 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     private void setupRecyclerView() {
         if (!initialized) {
             eventListAdapter = new EventsListAdapter(getPresenter().getEvents(), bus, getPresenter());
-            binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+//            binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+            eventListAdapter.getFilter().filter("live");
 
             recyclerView = binding.eventRecyclerView;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -239,7 +269,8 @@ public class EventListFragment extends BaseFragment<EventsPresenter> implements 
     @Override
     public void resetEventsList() {
         eventListAdapter.categorizeEvents();
-        binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+//        binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+        eventListAdapter.getFilter().filter("live");
     }
 
     @Override
