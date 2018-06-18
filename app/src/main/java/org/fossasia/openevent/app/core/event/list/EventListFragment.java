@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -95,22 +96,33 @@ public class EventListFragment extends BaseFragment implements EventsView {
 
         eventsViewModel = ViewModelProviders.of(this, viewModelFactory).get(EventsViewModel.class);
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(
-            item -> {
-                switch (item.getItemId()) {
-                    case R.id.action_live:
+        binding.tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
                         eventListAdapter.getFilter().filter("live");
-                        return true;
-                    case R.id.action_upcoming:
-                        eventListAdapter.getFilter().filter("upcoming");
-                        return true;
-                    case R.id.action_past:
+                        break;
+                    case 1:
                         eventListAdapter.getFilter().filter("past");
-                        return true;
-                    default:
-                        return false;
+                        break;
+                    case 2:
+                        eventListAdapter.getFilter().filter("draft");
+                        break;
                 }
-            });
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //do nothing
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //do nothing
+            }
+        });
+
 
         return binding.getRoot();
     }
@@ -159,9 +171,11 @@ public class EventListFragment extends BaseFragment implements EventsView {
         eventsViewModel.getSuccess().observe(this, this::onRefreshComplete);
         eventsViewModel.getEvents().observe(this, (events) -> {
             eventListAdapter.updateList(events);
-            binding.bottomNavigation.setSelectedItemId(
-                binding.bottomNavigation.getSelectedItemId()
-            );
+
+            binding.tab.getTabAt(
+                binding.tab.getSelectedTabPosition()
+            ).select();
+
             if (events.isEmpty())
                 this.showEmptyView(true);
             else
@@ -189,7 +203,7 @@ public class EventListFragment extends BaseFragment implements EventsView {
     private void setupRecyclerView() {
         if (!initialized) {
             eventListAdapter = new EventsListAdapter(eventsViewModel.getEvents().getValue(), bus, this);
-            binding.bottomNavigation.setSelectedItemId(R.id.action_live);
+            eventListAdapter.getFilter().filter("live");
 
             recyclerView = binding.eventRecyclerView;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
