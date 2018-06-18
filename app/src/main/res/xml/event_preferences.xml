@@ -5,4 +5,8 @@
         android:key="payment_preferences"
         android:title="Payment Preferences"/>
 
+    <Preference
+        android:key="scan_settings"
+        android:title="Scan Settings"/>
+
 </PreferenceScreen>
