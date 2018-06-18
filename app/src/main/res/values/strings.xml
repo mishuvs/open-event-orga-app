@@ -275,6 +275,7 @@
     <string name="bank_details">Bank Details</string>
     <string name="cheque_details">Cheque Details</string>
     <string name="onsite_details">OnSite Details</string>
+    <string name="scan_settings">Scan  Settings</string>
 
     <string-array name="timezones">
         <item>Africa/Abidjan</item>
