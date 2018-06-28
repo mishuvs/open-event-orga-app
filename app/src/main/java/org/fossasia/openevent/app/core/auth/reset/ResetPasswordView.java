@@ -5,7 +5,4 @@ import org.fossasia.openevent.app.common.mvp.view.Progressive;
 import org.fossasia.openevent.app.common.mvp.view.Successful;
 
 public interface ResetPasswordView extends Progressive, Successful, Erroneous {
-
-    void showMessage(String message);
-
 }

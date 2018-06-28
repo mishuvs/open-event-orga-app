@@ -53,7 +53,6 @@ public class ResetPasswordFragment extends BaseFragment implements ResetPassword
         resetPasswordViewModel.getProgress().observe(this, this::showProgress);
         resetPasswordViewModel.getError().observe(this, this::showError);
         resetPasswordViewModel.getSuccess().observe(this, this::onSuccess);
-        resetPasswordViewModel.getMessage().observe(this, this::showMessage);
 
         binding.btnResetPassword.setOnClickListener(view -> {
             if (!validator.validate())
@@ -68,7 +67,7 @@ public class ResetPasswordFragment extends BaseFragment implements ResetPassword
 
             String url = binding.url.baseUrl.getText().toString().trim();
             resetPasswordViewModel.setBaseUrl(url, binding.url.overrideUrl.isChecked());
-            resetPasswordViewModel.submitRequest();
+            resetPasswordViewModel.submitRequest(resetPasswordViewModel.getSubmitToken());
         });
 
         binding.loginLink.setOnClickListener(view -> openLoginPage());
@@ -110,8 +109,4 @@ public class ResetPasswordFragment extends BaseFragment implements ResetPassword
         showView(binding.progressBar, show);
     }
 
-    @Override
-    public void showMessage(String message) {
-        ViewUtils.showSnackbar(binding.getRoot(), message);
-    }
 }
