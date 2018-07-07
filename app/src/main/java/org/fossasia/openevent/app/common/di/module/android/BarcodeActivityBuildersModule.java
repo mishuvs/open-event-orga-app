@@ -1,5 +1,6 @@
 package org.fossasia.openevent.app.common.di.module.android;
 
+import org.fossasia.openevent.app.core.attendee.checkin.AttendeeCheckInFragment;
 import org.fossasia.openevent.app.core.attendee.qrscan.ScanQRActivity;
 
 import dagger.Module;
@@ -10,5 +11,8 @@ public abstract class BarcodeActivityBuildersModule {
 
     @ContributesAndroidInjector
     abstract ScanQRActivity contributeScanQRActivity();
+
+    @ContributesAndroidInjector
+    abstract AttendeeCheckInFragment contributeAttendeeCheckInFragment();
 
 }

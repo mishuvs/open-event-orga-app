@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,6 +36,9 @@ import javax.inject.Named;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.Lazy;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.Completable;
 import io.reactivex.Notification;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -46,7 +50,7 @@ import timber.log.Timber;
 import static org.fossasia.openevent.app.ui.ViewUtils.showView;
 
 @SuppressWarnings("PMD.TooManyMethods")
-public class ScanQRActivity extends BaseActivity<ScanQRPresenter> implements ScanQRView {
+public class ScanQRActivity extends BaseActivity<ScanQRPresenter> implements ScanQRView, HasSupportFragmentInjector {
 
     public static final int PERM_REQ_CODE = 123;
 
@@ -78,6 +82,9 @@ public class ScanQRActivity extends BaseActivity<ScanQRPresenter> implements Sca
     @Inject
     @Named("barcodeEmitter")
     PublishSubject<Notification<Barcode>> barcodeEmitter;
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> mFragmentInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,5 +268,10 @@ public class ScanQRActivity extends BaseActivity<ScanQRPresenter> implements Sca
             ViewUtils.setTint(barcodePanel, ContextCompat.getColor(this, R.color.light_blue_a400));
             getPresenter().resumeScan();
         });
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return mFragmentInjector;
     }
 }
