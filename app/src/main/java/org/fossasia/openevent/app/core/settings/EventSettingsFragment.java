@@ -12,12 +12,28 @@ import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
 
 import org.fossasia.openevent.app.R;
 import org.fossasia.openevent.app.common.Constants;
+import org.fossasia.openevent.app.core.main.MainActivity;
+import org.fossasia.openevent.app.core.settings.restriction.CheckInRestrictions;
 import org.fossasia.openevent.app.ui.ViewUtils;
 
 public class EventSettingsFragment extends PreferenceFragmentCompat {
 
-    public static EventSettingsFragment newInstance() {
-        return new EventSettingsFragment();
+    private long eventId;
+
+    public static EventSettingsFragment newInstance(long eventId) {
+        EventSettingsFragment fragment = new EventSettingsFragment();
+        Bundle args = new Bundle();
+        args.putLong(MainActivity.EVENT_KEY, eventId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null)
+            eventId = getArguments().getLong(MainActivity.EVENT_KEY);
     }
 
     @Override
@@ -47,6 +63,16 @@ public class EventSettingsFragment extends PreferenceFragmentCompat {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction
                 .replace(R.id.fragment_container, ScanSettings.newInstance())
+                .addToBackStack(null)
+                .commit();
+            return true;
+        });
+
+
+        findPreference("check_in_restrictions").setOnPreferenceClickListener(preference -> {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction
+                .replace(R.id.fragment_container, CheckInRestrictions.newInstance(eventId))
                 .addToBackStack(null)
                 .commit();
             return true;

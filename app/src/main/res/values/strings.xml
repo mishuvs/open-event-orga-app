@@ -300,6 +300,8 @@
     <string name="next">Next</string>
     <string name="create">Create</string>
     <string name="update_speakers_call">Update Speakers Call</string>
+    <string name="restrict_all">Restrict All</string>
+    <string name="check_in_restrictions">Check In Restrictions</string>
 
     <string-array name="timezones">
         <item>Africa/Abidjan</item>

@@ -9,4 +9,8 @@
         android:key="payment_preferences"
         android:title="@string/payment_preference"/>
 
+    <Preference
+        android:key="check_in_restrictions"
+        android:title="Check In Restrictions"/>
+
 </PreferenceScreen>
