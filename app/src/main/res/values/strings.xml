@@ -361,6 +361,7 @@
     <string name="auto_check_in_all">All types</string>
     <string name="auto_check_in">Auto Check In</string>
     <string name="auto_check_in_key">auto_check_in_key</string>
+    <string name="stay">Stay</string>
 
     <string-array name="timezones">
         <item>Africa/Abidjan</item>
