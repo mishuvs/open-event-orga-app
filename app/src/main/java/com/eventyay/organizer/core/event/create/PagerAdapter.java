@@ -16,7 +16,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return EventDetailsStepOne.newInstance();
+                return StepOne.newInstance();
             case 1:
                 return EventDetailsStepTwo.newInstance();
             case 2:

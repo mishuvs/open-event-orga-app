@@ -29,7 +29,7 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
-public class EventDetailsStepOne extends BaseBottomSheetFragment implements EventDetailsStepOneView {
+public class StepOne extends BaseBottomSheetFragment implements EventDetailsStepOneView {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -39,8 +39,8 @@ public class EventDetailsStepOne extends BaseBottomSheetFragment implements Even
     private static final int PLACE_PICKER_REQUEST = 1;
     private final LocationPicker locationPicker = new LocationPicker();
 
-    public static EventDetailsStepOne newInstance() {
-        return new EventDetailsStepOne();
+    public static StepOne newInstance() {
+        return new StepOne();
     }
 
     @Nullable
