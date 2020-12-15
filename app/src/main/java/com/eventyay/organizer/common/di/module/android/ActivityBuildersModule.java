@@ -4,7 +4,7 @@ import com.eventyay.organizer.core.auth.AuthActivity;
 import com.eventyay.organizer.core.event.about.AboutEventActivity;
 import com.eventyay.organizer.core.event.chart.ChartActivity;
 import com.eventyay.organizer.core.event.create.CreateEventActivity;
-import com.eventyay.organizer.core.event.create.EventDetailsStepOne;
+import com.eventyay.organizer.core.event.create.StepOne;
 import com.eventyay.organizer.core.event.create.EventDetailsStepThree;
 import com.eventyay.organizer.core.event.create.EventDetailsStepTwo;
 import com.eventyay.organizer.core.event.create.UpdateEventFragment;
@@ -52,7 +52,7 @@ public abstract class ActivityBuildersModule {
     abstract CreateSpeakersCallFragment contributeCreateSpeakersCallFragment();
 
     @ContributesAndroidInjector
-    abstract EventDetailsStepOne contributesEventDetailsLevel1();
+    abstract StepOne contributesEventDetailsLevel1();
 
     @ContributesAndroidInjector
     abstract EventDetailsStepTwo contributesEventDetailsLevel2();
